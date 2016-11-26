@@ -5,7 +5,7 @@
 /* A1. Create a database called Cus_Orders. */
 
  USE master;
-
+ 
  IF EXISTS (SELECT * FROM sysdatabases WHERE name = 'Cus_Orders')
  BEGIN
 	RAISERROR('Dropping existing Cus_Orders database...', 0, 1)
@@ -716,20 +716,23 @@ GO
 -- Part D - Stored Procedures and Triggers --
 -- ======================================= --
 
-/* 1. Create a stored procedure called sp_customer_city displaying the customers
+/* D1. Create a stored procedure called sp_customer_city displaying the customers
 living in a particular city. Run the procedure displaying customers living in
 London. */
+
+PRINT('D1: Creating procedure sp_customer_city...');
+GO
 
 CREATE PROCEDURE sp_customer_city
 (
 	@city	varchar(20)
 )
 AS
-SELECT  customer_id,
-		name,
-		address,
-		city,
-		phone
+SELECT  customer_id AS 'Customer Id',
+		name AS 'Name',
+		address AS 'Address',
+		city AS 'City',
+		phone AS 'Phone'
 FROM customers
 WHERE city = @city;
 GO
@@ -737,34 +740,40 @@ GO
 EXECUTE sp_customer_city 'London';
 GO
 
-/* 2. Create a stored procedure called sp_orders_by_date displaying the orders shipped 
+/* D2. Create a stored procedure called sp_orders_by_dates displaying the orders shipped 
 between particular dates. Run the procedure displaying orders from January 1, 2003
 to June 30, 2003. */
 
-CREATE PROCEDURE sp_orders_by_date
+PRINT('D2: Creating procedure sp_orders_by_dates...');
+GO
+
+CREATE PROCEDURE sp_orders_by_dates
 (
 	@date1  datetime,
 	@date2	datetime
 )
 AS
-SELECT  orders.order_id,
-		orders.customer_id,
-		customers.name,
-		shippers.name,
-		orders.shipped_date
+SELECT  orders.order_id AS 'Order_id',
+		orders.customer_id AS 'Customer Id',
+		customers.name AS 'Customer Name',
+		shippers.name AS 'Shipper',
+		CONVERT(char(11), orders.shipped_date, 100) AS 'Shipped Date'
 FROM customers
 INNER JOIN orders ON customers.customer_id = orders.customer_id
 INNER JOIN shippers ON orders.shipper_id = shippers.shipper_id
 WHERE orders.shipped_date BETWEEN @date1 AND @date2;
 GO
 
-EXECUTE sp_orders_by_date 'Jan 1 2003', 'Jun 30 2003';
+EXECUTE sp_orders_by_dates 'Jan 1 2003', 'Jun 30 2003';
 GO
 
-/* 3. Create a stored procedure called sp_product_listing listing a specified
+/* D3. Create a stored procedure called sp_product_listing listing a specified
 product ordered during a specified month and year. Run the procedure displaying
 a product name containing Jack and the month of the order date is June and the
 year is 2001. */
+
+PRINT('D3: Creating procedure sp_product_listing...');
+GO
 
 CREATE PROCEDURE sp_product_listing
 (
@@ -773,10 +782,10 @@ CREATE PROCEDURE sp_product_listing
 	@year		int
 )
 AS
-SELECT  products.name,
-		products.unit_price,
-		products.quantity_in_stock,
-		suppliers.name
+SELECT  products.name AS 'Product Name',
+		products.unit_price AS 'Unit Price',
+		products.quantity_in_stock AS 'Quantity in Stock',
+		suppliers.name AS 'Supplier'
 FROM products
 INNER JOIN suppliers ON products.supplier_id = suppliers.supplier_id
 INNER JOIN order_details ON products.product_id = order_details.product_id
