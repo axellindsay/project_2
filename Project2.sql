@@ -411,7 +411,7 @@ GO
 /* B2. Add a new column called active to the customers table using the ALTER statement.
 The only valid values are 1 or 0. Default should be 1. */
 
-PRINT('Inserting column active into customers..');
+PRINT('B2: Inserting column active into customers...');
 GO
 
 ALTER TABLE customers
@@ -419,7 +419,7 @@ ADD active int NOT NULL
 DEFAULT 1;
 GO
 
-PRINT('Setting constraint cK_active on customers..');
+PRINT('B2: Setting constraint cK_active on customers...');
 GO
 
 ALTER TABLE customers
@@ -462,34 +462,39 @@ SELECT  customers.customer_id AS 'Customer Id',
 		customers.city AS 'City',
 		titles.description AS 'Description'
 FROM customers
-INNER JOIN titles ON customers.title_id = titles.title_id;
+INNER JOIN titles ON customers.title_id = titles.title_id
+WHERE customers.region IS NULL;
+GO
 
-/* 6. List the products where the reorder level is higher than the quantity in stock. */
+/* B6. List the products where the reorder level is higher than the quantity in stock. */
 
-SELECT  suppliers.name,
-		products.name,
-		products.reorder_level,
-		products.quantity_in_stock
+SELECT  suppliers.name AS 'Supplier Name',
+		products.name AS 'Product Name',
+		products.reorder_level AS 'Reorder Level',
+		products.quantity_in_stock AS 'Quantity in Stock'
 FROM products
 INNER JOIN suppliers ON products.supplier_id = suppliers.supplier_id
 WHERE products.reorder_level > products.quantity_in_stock
 ORDER BY suppliers.name;
+GO
 
-/* 7. Calculate the length in years from January 1, 2008 and when an order was shipped
+/* B7. Calculate the length in years from January 1, 2008 and when an order was shipped
 where the shipped date is not null. */
 
-SELECT  orders.order_id,
-		customers.name,
-		customers.contact_name,
+SELECT  orders.order_id AS 'Order Id',
+		customers.name AS 'Customer Name',
+		customers.contact_name AS 'Contact Name',
 		CONVERT(char(11), orders.shipped_date, 100) AS 'Shipped Date',
 		DATEPART(year, 'Jan 1 2008') - DATEPART(year, orders.shipped_date) AS 'Elapsed'
 FROM orders
 INNER JOIN customers ON orders.customer_id = customers.customer_id
 WHERE orders.shipped_date IS NOT NULL
 ORDER BY orders.order_id, 'Elapsed';
+GO
 
-/* 8. List number of customers with names beginning with each letter of the alphabet.
-Ignore customers whose name begins with the letter S. */
+/* B8. List number of customers with names beginning with each letter of the alphabet.
+Ignore customers whose name begins with the letter S. Do not display the letter and 
+count unless at least two customer’s names begin with the letter.*/
 
 SELECT  SUBSTRING(name, 1, 1) AS 'Name',
 		COUNT(SUBSTRING(name, 1, 1)) AS 'Total'
@@ -497,35 +502,44 @@ FROM customers
 WHERE SUBSTRING(name, 1, 1) != 'S'
 GROUP BY SUBSTRING(name, 1, 1)
 HAVING COUNT(SUBSTRING(name, 1, 1)) > 1;
+GO
 
-/* 9. List the order details where the quantity is greater than 100. */
+/* B9. List the order details where the quantity is greater than 100. */
 
-SELECT  order_details.order_id,
-		order_details.quantity,
-		products.product_id,
-		products.reorder_level,
-		suppliers.supplier_id
+SELECT  order_details.order_id AS 'Order Id',
+		order_details.quantity AS 'Quantity',
+		products.product_id AS 'Product Id',
+		products.reorder_level AS 'Reorder Level',
+		suppliers.supplier_id AS 'Supplier Id'
 FROM order_details
 INNER JOIN products ON order_details.product_id = products.product_id
 INNER JOIN suppliers ON products.supplier_id = suppliers.supplier_id
 WHERE order_details.quantity > 100
 ORDER BY order_details.order_id;
+GO
 
-/* List the products which contain tofu or chef in their name. */
+/* B10. List the products which contain tofu or chef in their name. */
 
-SELECT  product_id,
-		name,
-		quantity_per_unit,
-		unit_price
+SELECT  product_id AS 'Product Id',
+		name AS 'Name',
+		quantity_per_unit AS 'Quantity per Unit',
+		unit_price As 'Unit Price'
 FROM products
 WHERE name LIKE '%tofu%' OR name LIKE '%chef%'
 ORDER BY name;
+GO
+
+PRINT('END OF PART B');
+GO
 
 -- ===================================================== --
 -- Part C - Insert, Update, Delete, and Views Statements --
 -- ===================================================== --
 
- /* 1. Create an employee table. */
+ /* C1. Create an employee table. */
+
+PRINT('C1: Creating employee table...');
+GO
 
  CREATE TABLE employee
  (
@@ -539,23 +553,36 @@ ORDER BY name;
 	phone			varchar(10),
 	birth_date		datetime NOT NULL
 )
+GO
 
-/* 2. The primary key for the employee table should be the employee id. */
+/* C2. The primary key for the employee table should be the employee id. */
+
+PRINT('C2: Setting PK on employee...');
+GO
 
 ALTER TABLE employee
 ADD PRIMARY KEY (employee_id);
+GO
 
-/* 3. Load the data into the employee table. Create the relationship 
+/* C3. Load the data into the employee table. Create the relationship 
 between employee and orders tables.*/
+
+PRINT('C3: Inserting data into employee...');
+GO
 
 BULK INSERT employee 
 FROM 'C:\TextFiles\employee.txt' 
-WITH (         CODEPAGE=1252,            
+WITH (         
+		CODEPAGE=1252,            
 		DATAFILETYPE = 'char',
 		FIELDTERMINATOR = '\t',
 		KEEPNULLS,
 		ROWTERMINATOR = '\n'	            
 	 )
+GO
+
+PRINT('C3: Setting FK fk_orders_employee on orders...');
+GO
 
 ALTER TABLE orders
 ADD CONSTRAINT fk_orders_employee
@@ -563,37 +590,49 @@ FOREIGN KEY (employee_id)
 REFERENCES employee(employee_id);
 GO
 
-/* 4. Add the shipper Quick Express to the shippers table. */
+/* C4. Add the shipper Quick Express to the shippers table. */
+
+PRINT('C4: Adding value Quick Express to shippers...');
+GO
 
 INSERT INTO shippers
 VALUES ('Quick Express');
 GO
 
-/* 5. Increase the unit price in the products table of all rows with a 
+/* C5. Increase the unit price in the products table of all rows with a 
 current unity price between $5.00 and $10.00 by 5%. */
+
+PRINT('C5: Updating unit_price between $5.00 and $10.00 on products...');
+GO
 
 UPDATE products
 SET unit_price *= 1.05
 WHERE unit_price BETWEEN 5 AND 10
 GO
 
-/* 6. Change the fax value to Unknown for all rows in the customers table
+/* C6. Change the fax value to Unknown for all rows in the customers table
 where the current fax value is NULL. */
+
+PRINT('C6: Updating fax where is null on products...');
+GO
 
 UPDATE customers
 SET fax = 'Unknown'
 WHERE fax IS NULL;
 GO
 
-/* 7. Create a view called vw_order_cost to list the cost of the orders. Run
+/* C7. Create a view called vw_order_cost to list the cost of the orders. Run
 the view for the order ids between 10000 and 10200. */
+
+PRINT('C7: Creating view vw_order_cost...');
+GO
 
 CREATE VIEW vw_order_cost
 AS
-SELECT	orders.order_id,
-		orders.order_date,
-		products.product_id,
-		customers.name,
+SELECT	orders.order_id AS [Order Id],
+		CONVERT(char(11), orders.order_date, 100) AS 'Order Date',
+		products.product_id AS 'Product Id',
+		customers.name AS 'Customer Name',
 		(order_details.quantity * products.unit_price) AS 'Order Cost'
 FROM customers
 INNER JOIN orders ON customers.customer_id = orders.customer_id
@@ -603,12 +642,15 @@ GO
 
 SELECT *
 FROM vw_order_cost
-WHERE order_id BETWEEN 10000 AND 10200;
+WHERE [Order Id] BETWEEN 10000 AND 10200;
 GO
 
-/* 8. Create a view called vw_list_employees to list all the employees and
+/* C8. Create a view called vw_list_employees to list all the employees and
 all the columns in the employee table. Run the view for employee ids 5, 7, 
 and 9. */
+
+PRINT('C8: Creating view vw_list_employees...');
+GO
 
 CREATE VIEW vw_list_employees
 AS
@@ -616,47 +658,48 @@ SELECT *
 FROM employee;
 GO
 
-SELECT  employee_id,
+SELECT  employee_id AS 'Employee Id',
 		last_name + ', ' + first_name AS 'Name',
 		CONVERT(char(10), birth_date, 102) AS 'Birth Date'
 FROM vw_list_employees
 WHERE employee_id IN (5, 7, 9);
 GO
 
-/* 9. Create a view called vw_all_orders to list all the orders. Run the view 
+/* C9. Create a view called vw_all_orders to list all the orders. Run the view 
 for orders shipped from January 1, 2002 and December 31, 2002. */
+
+PRINT('C9: Creating view vw_all_orders...');
+GO
 
 CREATE VIEW vw_all_orders
 AS
-SELECT  orders.order_id,
-		customers.customer_id,
-		customers.name,
-		customers.city,
-		customers.country,
-		orders.shipped_date
+SELECT  orders.order_id AS 'Order Id',
+		customers.customer_id AS 'Customer Id',
+		customers.name AS [Customer Name],
+		customers.city AS 'City',
+		customers.country AS [Country],
+		CONVERT(char(11), orders.shipped_date, 100) AS [Shipped Date]
 FROM orders
 INNER JOIN customers ON orders.customer_id = customers.customer_id;
 GO
 
-SELECT  order_id,
-		customer_id,
-		name,
-		city,
-		country,
-		CONVERT(char(11), shipped_date, 100) AS 'Shipped Date'
+SELECT  *
 FROM vw_all_orders
-WHERE shipped_date BETWEEN 'Jan 1 2002' AND 'Dec 31 2002'
-ORDER BY name, country;
+WHERE CONVERT(datetime, [Shipped Date]) BETWEEN 'Jan 1 2002' AND 'Dec 31 2002'
+ORDER BY [Customer Name], [Country];
 GO
 
-/* 10. Create a view listing the suppliers and the items they have shipped.
+/* C10. Create a view listing the suppliers and the items they have shipped.
 Run the view. */
+
+PRINT('C10: Creating view vw_all_suppliers...');
+GO
 
 CREATE VIEW vw_all_suppliers
 AS
-SELECT  suppliers.supplier_id,
+SELECT  suppliers.supplier_id AS 'Supplier Id',
 		suppliers.name AS 'Supplier',
-		products.product_id,
+		products.product_id AS 'Product Id',
 		products.name AS 'Product'
 FROM suppliers
 INNER JOIN products ON suppliers.supplier_id = products.supplier_id;
@@ -664,6 +707,9 @@ GO
 
 SELECT *
 FROM vw_all_suppliers;
+GO
+
+PRINT('END OF PART C');
 GO
 
 -- ======================================= --
