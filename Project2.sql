@@ -798,9 +798,12 @@ GO
 EXECUTE sp_product_listing '%Jack%', 'June', 2001;
 GO
 
-/* 4. Create a delete trigger called tr_delete_orders on the orders table to 
+/* D4. Create a delete trigger called tr_delete_orders on the orders table to 
 display an error message if an order is deleted that has a value in the
 order_details table. */
+
+PRINT('D4: Creating trigger tr_delete_orders on orders...');
+GO
 
 CREATE TRIGGER tr_delete_orders
 ON orders
@@ -808,26 +811,31 @@ INSTEAD OF DELETE
 AS
 DECLARE @id int;
 SELECT @id = order_id FROM deleted
-IF (SELECT COUNT(*) FROM order_details WHERE order_id = @id) > 0
+IF EXISTS (SELECT * FROM order_details WHERE order_id = @id)
 	BEGIN
 		PRINT 'No deleting orders with references to order_details table.'
 		ROLLBACK TRANSACTION
 	END;
 GO
 
+PRINT('D4: Verifying trigger tr_delete_orders...');
+GO
+
 DELETE orders
 WHERE order_id = 10000;
 GO
 
-/* 5. Create an insert and update trigger called tr_check_qty on the order_details
+/* D5. Create an insert and update trigger called tr_check_qty on the order_details
 table to only allow orders of products that have a quantity in stock greater than or
 equal to the units ordered. */
+
+PRINT('D5: Creating trigger tr_check_qty on order_details...');
+GO
 
 CREATE TRIGGER tr_check_qty
 ON order_details
 FOR INSERT, UPDATE
 AS
-
 DECLARE @id int,
 		@qtyinstock int,
 		@orderqty int
@@ -847,26 +855,40 @@ IF (@orderqty > @qtyinstock)
 	END
 GO
 
+PRINT('D5: Verifying trigger tr_check_qty...');
+GO
+
 UPDATE order_details
 SET quantity = 30
 WHERE order_id = '10044'
 AND product_id = 7;
 GO
 
-/* 6. Create a stored procedure called sp_del_inactive_cust to delete customers
+/* D6. Create a stored procedure called sp_del_inactive_cust to delete customers
 that have no orders. */
+
+PRINT('D6: Creating procedure sp_del_inactive_cust...');
+GO
 
 CREATE PROCEDURE sp_del_inactive_cust
 AS
 DELETE FROM customers
-WHERE customer_id NOT IN (SELECT customer_id FROM orders);
+WHERE NOT EXISTS (SELECT *
+				  FROM orders
+				  WHERE orders.customer_id = customers.customer_id);
+GO
+
+PRINT('D6: Verifying procedure sp_del_inactive_cust...');
 GO
 
 EXECUTE sp_del_inactive_cust;
 GO
 
-/* 7. Create a stored procedure called sp_employee_information to display the
+/* D7. Create a stored procedure called sp_employee_information to display the
 employee information for a particular employee. */
+
+PRINT('D7: Creating procedure sp_employee_information...');
+GO
 
 CREATE PROCEDURE sp_employee_information
 (
@@ -878,34 +900,47 @@ FROM employee
 WHERE employee_id = @employeeid;
 GO
 
+PRINT('D7: Verifying procedure sp_employee_information...');
+GO
+
 EXECUTE sp_employee_information 5;
 GO
 
-/* 8. Create a stored procedure called sp_reorder_qty to show when the reorder
+/* D8. Create a stored procedure called sp_reorder_qty to show when the reorder
 level substracted from the quantity in stock is less than a specified value. */
+
+PRINT('D8: Creating procedure sp_reorder_qty...');
+GO
 
 CREATE PROCEDURE sp_reorder_qty
 (
 	@unit int
 )
 AS
-SELECT  products.product_id,
-		suppliers.name,
-		suppliers.address,
-		suppliers.city,
-		suppliers.province,
-		products.quantity_in_stock,
-		products.reorder_level
+SELECT  products.product_id AS 'Product Id',
+		suppliers.name AS 'Supplier Name',
+		suppliers.address AS 'Supplier Address',
+		suppliers.city AS 'Supplier City',
+		suppliers.province AS 'Supplier Province',
+		products.quantity_in_stock AS 'Quantity in Stock',
+		products.reorder_level AS 'Reorder Level'
 FROM products
 INNER JOIN suppliers ON products.supplier_id = suppliers.supplier_id
 WHERE (products.quantity_in_stock - products.reorder_level) < @unit;
 GO
 
+PRINT('D8: Verifying procedure sp_reorder_qty...');
+GO
+
 EXECUTE sp_reorder_qty 5;
 GO
 
-/* 9. Create a stored procedure called sp_unit_prices for the product table
-where the unit price is between particular values. */
+/* D9. Create a stored procedure called sp_unit_prices for the product table
+where the unit price is between particular values. Run the procedure to 
+display products where the unit price is between $5.00 and $10.00. */
+
+PRINT('D9: Creating procedure sp_unit_prices...');
+GO
 
 CREATE PROCEDURE sp_unit_prices
 (
@@ -913,12 +948,18 @@ CREATE PROCEDURE sp_unit_prices
 	@price2 money
 )
 AS
-SELECT  product_id,
-		name,
-		alternate_name,
-		unit_price
+SELECT  product_id AS 'Product Id',
+		name AS 'Product Name',
+		alternate_name AS 'Alternate Name',
+		unit_price AS 'Unit Price'
 FROM products
 WHERE unit_price BETWEEN @price1 AND @price2;
 GO
 
+PRINT('D9: Verifying procedure sp_unit_prices...');
+GO
+
 EXECUTE sp_unit_prices $5.00, $10.00;
+
+PRINT('END OF PART D');
+GO
