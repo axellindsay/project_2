@@ -895,7 +895,15 @@ CREATE PROCEDURE sp_employee_information
 	@employeeid int
 )
 AS
-SELECT *
+SELECT  employee_id AS 'Employee Id',
+		last_name AS 'Last Name',
+		first_name AS 'First Name',
+		address AS 'Address',
+		city AS 'City',
+		province AS 'Province',
+		postal_code AS 'Postal Code',
+		phone AS 'Phone',
+		CONVERT(char(11), birth_date, 100) AS 'Birth Date'
 FROM employee
 WHERE employee_id = @employeeid;
 GO
