@@ -8,12 +8,12 @@
  
  IF EXISTS (SELECT * FROM sysdatabases WHERE name = 'Cus_Orders')
  BEGIN
-	RAISERROR('Dropping existing Cus_Orders database...', 0, 1)
+	RAISERROR('Dropping existing Cus_Orders database.', 0, 1)
 	DROP DATABASE Cus_Orders
 END
 GO
 
-PRINT('A1: Creating Cus_Orders database...');
+PRINT('A1: Creating Cus_Orders database.');
 GO
 
 CREATE DATABASE Cus_Orders;
@@ -25,13 +25,13 @@ GO
 /* A2. Create a user-defined data types, for all similar Primary Key
 attribute columns. */
 
-PRINT('A2: Creating charidtype data type...');
+PRINT('A2: Creating charidtype data type.');
 GO
 
 CREATE TYPE charidtype FROM char(5) NOT NULL;
 GO
 
-PRINT('A2: Creating intidtype data type...');
+PRINT('A2: Creating intidtype data type.');
 GO
 
 CREATE TYPE intidtype FROM int NOT NULL;
@@ -40,7 +40,7 @@ GO
 /* A3. Create the tables customers, orders, order_details, products,
 shippers, suppliers, and titles. */
 
-PRINT('A3: Creating customers table...');
+PRINT('A3: Creating customers table.');
 GO
 
 CREATE TABLE customers
@@ -59,7 +59,7 @@ CREATE TABLE customers
 );
 GO
 
-PRINT('A3: Creating orders table...');
+PRINT('A3: Creating orders table.');
 GO
 
 CREATE TABLE orders
@@ -81,7 +81,7 @@ CREATE TABLE orders
 );
 GO
 
-PRINT('A3: Creating order_details table...');
+PRINT('A3: Creating order_details table.');
 GO
 
 CREATE TABLE order_details
@@ -93,7 +93,7 @@ CREATE TABLE order_details
 );
 GO
 
-PRINT('A3: Creating products table...');
+PRINT('A3: Creating products table.');
 GO
 
 CREATE TABLE products
@@ -110,7 +110,7 @@ CREATE TABLE products
 );
 GO
 
-PRINT('A3: Creating shippers table...');
+PRINT('A3: Creating shippers table.');
 GO
 
 CREATE TABLE shippers
@@ -119,7 +119,7 @@ CREATE TABLE shippers
 	name			varchar(20) NOT NULL
 );
 
-PRINT('A3: Creating suppliers table...');
+PRINT('A3: Creating suppliers table.');
 GO
 
 CREATE TABLE suppliers
@@ -132,7 +132,7 @@ CREATE TABLE suppliers
 );
 GO
 
-PRINT('A3: Creating titles table...');
+PRINT('A3: Creating titles table.');
 GO
 
 CREATE TABLE titles
@@ -144,56 +144,56 @@ GO
 
 /* A4. Set the primary keys and foreign keys for the tables. */
 
-PRINT('A4: Setting PK on customers...');
+PRINT('A4: Setting PK on customers.');
 GO
 
 ALTER TABLE customers
 ADD PRIMARY KEY (customer_id);
 GO
 
-PRINT('A4: Setting PK on orders...');
+PRINT('A4: Setting PK on orders.');
 GO
 
 ALTER TABLE orders
 ADD PRIMARY KEY (order_id);
 GO
 
-PRINT('A4: Setting composite PK on order_details...');
+PRINT('A4: Setting composite PK on order_details.');
 GO
 
 ALTER TABLE order_details
 ADD PRIMARY KEY (order_id, product_id);
 GO
 
-PRINT('A4: Setting PK on products...');
+PRINT('A4: Setting PK on products.');
 GO
 
 ALTER TABLE products
 ADD PRIMARY KEY (product_id);
 GO
 
-PRINT('A4: Setting PK on shippers...');
+PRINT('A4: Setting PK on shippers.');
 GO
 
 ALTER TABLE shippers
 ADD PRIMARY KEY (shipper_id);
 GO
 
-PRINT('A4: Setting PK on suppliers...');
+PRINT('A4: Setting PK on suppliers.');
 GO
 
 ALTER TABLE suppliers
 ADD PRIMARY KEY (supplier_id);
 GO
 
-PRINT('A4: Setting PK on titles...');
+PRINT('A4: Setting PK on titles.');
 GO
 
 ALTER TABLE titles
 ADD PRIMARY KEY (title_id);
 GO
 
-PRINT('A4: Setting FK fk_titles_customers on customers...');
+PRINT('A4: Setting FK fk_titles_customers on customers.');
 GO
 
 ALTER TABLE customers
@@ -202,7 +202,7 @@ FOREIGN KEY (title_id)
 REFERENCES titles(title_id);
 GO
 
-PRINT('A4: Setting FK fk_customers_orders on orders...');
+PRINT('A4: Setting FK fk_customers_orders on orders.');
 GO
 
 ALTER TABLE orders
@@ -211,7 +211,7 @@ FOREIGN KEY (customer_id)
 REFERENCES customers(customer_id);
 GO
 
-PRINT('A4: Setting FK fk_shippers_orders on orders...');
+PRINT('A4: Setting FK fk_shippers_orders on orders.');
 GO
 
 ALTER TABLE orders
@@ -220,7 +220,7 @@ FOREIGN KEY (shipper_id)
 REFERENCES shippers(shipper_id);
 GO
 
-PRINT('A4: Setting FK fk_orders_orderdetails on order_details...');
+PRINT('A4: Setting FK fk_orders_orderdetails on order_details.');
 GO
 
 ALTER TABLE order_details
@@ -229,7 +229,7 @@ FOREIGN KEY (order_id)
 REFERENCES orders(order_id);
 GO
 
-PRINT('A4: Setting FK fk_products_orderdetails on order_details...');
+PRINT('A4: Setting FK fk_products_orderdetails on order_details.');
 GO
 
 ALTER TABLE order_details
@@ -238,7 +238,7 @@ FOREIGN KEY (product_id)
 REFERENCES products(product_id);
 GO
 
-PRINT('A4: Setting FK fk_suppliers_products on products...');
+PRINT('A4: Setting FK fk_suppliers_products on products.');
 GO
 
 ALTER TABLE products
@@ -249,7 +249,7 @@ GO
 
 /* A5. Set the constraints. */
 
-PRINT('A5: Setting contraint default_customers_country on customers..');
+PRINT('A5: Setting contraint default_customers_country on customers.');
 GO
 
 ALTER TABLE customers
@@ -257,7 +257,7 @@ ADD CONSTRAINT default_customers_country
 DEFAULT ('Canada') FOR country;
 GO
 
-PRINT('A5: Setting constraint default_orders_date on orders...');
+PRINT('A5: Setting constraint default_orders_date on orders.');
 GO
 
 ALTER TABLE orders
@@ -265,7 +265,7 @@ ADD CONSTRAINT default_orders_date
 DEFAULT DATEADD(DAY, 10, GETDATE()) FOR required_date;
 GO
 
-PRINT('A5: Setting constraint ck_orderdetails_qty on order_details...');
+PRINT('A5: Setting constraint ck_orderdetails_qty on order_details.');
 GO
 
 ALTER TABLE order_details
@@ -273,7 +273,7 @@ ADD CONSTRAINT check_orderdetails_qty
 CHECK (quantity >= 1);
 GO
 
-PRINT('A5: Setting constraint ck_products_reorderlvl on products..');
+PRINT('A5: Setting constraint ck_products_reorderlvl on products.');
 GO
 
 ALTER TABLE products
@@ -281,7 +281,7 @@ ADD CONSTRAINT ck_products_reorderlvl
 CHECK (reorder_level >= 1);
 GO
 
-PRINT('A5: Setting constraint ck_products_qtyinstock on products...');
+PRINT('A5: Setting constraint ck_products_qtyinstock on products.');
 GO
 
 ALTER TABLE products
@@ -289,7 +289,7 @@ ADD CONSTRAINT ck_products_qtyinstock
 CHECK (quantity_in_stock <= 150);
 GO
 
-PRINT('A5: Setting constraint default_suppliers_prov on suppliers..');
+PRINT('A5: Setting constraint default_suppliers_prov on suppliers.');
 GO
 
 ALTER TABLE suppliers
@@ -299,7 +299,7 @@ GO
 
 /* A6. Load the data into your created tables. */
 
-PRINT('A6: Inserting data into titles...');
+PRINT('A6: Inserting data into titles.');
 GO
 
 BULK INSERT titles 
@@ -312,7 +312,7 @@ WITH (
 		ROWTERMINATOR = '\n'	            
 	 );
 
-PRINT('A6: Inserting data into suppliers...');
+PRINT('A6: Inserting data into suppliers.');
 GO
 
 BULK INSERT suppliers 
@@ -325,7 +325,7 @@ WITH (
 		ROWTERMINATOR = '\n'	            
 	  );
 
-PRINT('A6: Inserting data into shippers...');
+PRINT('A6: Inserting data into shippers.');
 GO
 
 BULK INSERT shippers 
@@ -338,7 +338,7 @@ WITH (
 		ROWTERMINATOR = '\n'	            
 	  );
 
-PRINT('A6: Inserting data into customers...');
+PRINT('A6: Inserting data into customers.');
 GO
 
 BULK INSERT customers 
@@ -351,7 +351,7 @@ WITH (
 		ROWTERMINATOR = '\n'	            
 	  );
 
-PRINT('A6: Inserting data into products...');
+PRINT('A6: Inserting data into products.');
 GO
 
 BULK INSERT products 
@@ -364,7 +364,7 @@ WITH (
 		ROWTERMINATOR = '\n'	            
 	  );
 
-PRINT('A6: Inserting data in order_details..');
+PRINT('A6: Inserting data into order_details.');
 GO
 
 BULK INSERT order_details 
@@ -377,7 +377,7 @@ WITH (
 		ROWTERMINATOR = '\n'	            
 	  );
 
-PRINT('A6: Inserting data in orders...');
+PRINT('A6: Inserting data into orders.');
 GO
 
 BULK INSERT orders 
@@ -399,6 +399,8 @@ GO
 
 /* B1. List the customer id, name, city, and country from the customer table.
 Order the result by the customer id. */
+
+PRINT('B1: Select statment.')
 	
 SELECT  customer_id AS 'Customer Id',
 		name AS 'Name',
@@ -411,7 +413,7 @@ GO
 /* B2. Add a new column called active to the customers table using the ALTER statement.
 The only valid values are 1 or 0. Default should be 1. */
 
-PRINT('B2: Inserting column active into customers...');
+PRINT('B2: Inserting column active into customers.');
 GO
 
 ALTER TABLE customers
@@ -429,6 +431,8 @@ GO
 
 /* B3. List all the orders where the order date is between January 1 and December 31, 2001. */
 
+PRINT('B3: Select statment.')
+
 SELECT  orders.order_id AS 'Order Id',
 		products.name AS 'Product Name',
 		customers.name AS 'Customer Name',
@@ -444,6 +448,8 @@ GO
 
 /* B4. List all the orders that have not been shipped. */
 
+PRINT('B4: Select statment.')
+
 SELECT  customers.customer_id AS 'Customer Id',
 		customers.name AS 'Name',
 		customers.phone AS 'Phone',
@@ -457,6 +463,8 @@ GO
 
 /* B5. List all the customers where the region is NULL. */
 
+PRINT('B5: Select statment.')
+
 SELECT  customers.customer_id AS 'Customer Id',
 		customers.name AS 'Name',
 		customers.city AS 'City',
@@ -467,6 +475,8 @@ WHERE customers.region IS NULL;
 GO
 
 /* B6. List the products where the reorder level is higher than the quantity in stock. */
+
+PRINT('B6: Select statment.')
 
 SELECT  suppliers.name AS 'Supplier Name',
 		products.name AS 'Product Name',
@@ -481,6 +491,8 @@ GO
 /* B7. Calculate the length in years from January 1, 2008 and when an order was shipped
 where the shipped date is not null. */
 
+PRINT('B7: Select statment.')
+
 SELECT  orders.order_id AS 'Order Id',
 		customers.name AS 'Customer Name',
 		customers.contact_name AS 'Contact Name',
@@ -494,7 +506,9 @@ GO
 
 /* B8. List number of customers with names beginning with each letter of the alphabet.
 Ignore customers whose name begins with the letter S. Do not display the letter and 
-count unless at least two customer’s names begin with the letter.*/
+count unless at least two customers’ names begin with the letter.*/
+
+PRINT('B8: Select statment.')
 
 SELECT  SUBSTRING(name, 1, 1) AS 'Name',
 		COUNT(SUBSTRING(name, 1, 1)) AS 'Total'
@@ -505,6 +519,8 @@ HAVING COUNT(SUBSTRING(name, 1, 1)) > 1;
 GO
 
 /* B9. List the order details where the quantity is greater than 100. */
+
+PRINT('B9: Select statment.')
 
 SELECT  order_details.order_id AS 'Order Id',
 		order_details.quantity AS 'Quantity',
@@ -519,6 +535,8 @@ ORDER BY order_details.order_id;
 GO
 
 /* B10. List the products which contain tofu or chef in their name. */
+
+PRINT('B10: Select statment.')
 
 SELECT  product_id AS 'Product Id',
 		name AS 'Name',
@@ -538,7 +556,7 @@ GO
 
  /* C1. Create an employee table. */
 
-PRINT('C1: Creating employee table...');
+PRINT('C1: Creating employee table.');
 GO
 
  CREATE TABLE employee
@@ -557,7 +575,7 @@ GO
 
 /* C2. The primary key for the employee table should be the employee id. */
 
-PRINT('C2: Setting PK on employee...');
+PRINT('C2: Setting PK on employee.');
 GO
 
 ALTER TABLE employee
@@ -567,7 +585,7 @@ GO
 /* C3. Load the data into the employee table. Create the relationship 
 between employee and orders tables.*/
 
-PRINT('C3: Inserting data into employee...');
+PRINT('C3: Inserting data into employee.');
 GO
 
 BULK INSERT employee 
@@ -581,7 +599,7 @@ WITH (
 	 )
 GO
 
-PRINT('C3: Setting FK fk_orders_employee on orders...');
+PRINT('C3: Setting FK fk_orders_employee on orders.');
 GO
 
 ALTER TABLE orders
@@ -592,7 +610,7 @@ GO
 
 /* C4. Add the shipper Quick Express to the shippers table. */
 
-PRINT('C4: Adding value Quick Express to shippers...');
+PRINT('C4: Adding value Quick Express to shippers.');
 GO
 
 INSERT INTO shippers
@@ -602,18 +620,18 @@ GO
 /* C5. Increase the unit price in the products table of all rows with a 
 current unity price between $5.00 and $10.00 by 5%. */
 
-PRINT('C5: Updating unit_price between $5.00 and $10.00 on products...');
+PRINT('C5: Updating unit_price between $5.00 and $10.00 on products.');
 GO
 
 UPDATE products
 SET unit_price *= 1.05
-WHERE unit_price BETWEEN 5 AND 10
+WHERE unit_price BETWEEN $5.00 AND $10.00;
 GO
 
 /* C6. Change the fax value to Unknown for all rows in the customers table
 where the current fax value is NULL. */
 
-PRINT('C6: Updating fax where is null on products...');
+PRINT('C6: Updating fax where is null on products.');
 GO
 
 UPDATE customers
@@ -624,7 +642,7 @@ GO
 /* C7. Create a view called vw_order_cost to list the cost of the orders. Run
 the view for the order ids between 10000 and 10200. */
 
-PRINT('C7: Creating view vw_order_cost...');
+PRINT('C7: Creating view vw_order_cost.');
 GO
 
 CREATE VIEW vw_order_cost
@@ -640,6 +658,9 @@ INNER JOIN order_details ON orders.order_id = order_details.order_id
 INNER JOIN products ON order_details.product_id = products.product_id;
 GO
 
+PRINT('C7: Running view vw_order_cost.');
+GO
+
 SELECT *
 FROM vw_order_cost
 WHERE [Order Id] BETWEEN 10000 AND 10200;
@@ -649,13 +670,16 @@ GO
 all the columns in the employee table. Run the view for employee ids 5, 7, 
 and 9. */
 
-PRINT('C8: Creating view vw_list_employees...');
+PRINT('C8: Creating view vw_list_employees.');
 GO
 
 CREATE VIEW vw_list_employees
 AS
 SELECT *
 FROM employee;
+GO
+
+PRINT('C8: Running view vw_list_employees.');
 GO
 
 SELECT  employee_id AS 'Employee Id',
@@ -668,7 +692,7 @@ GO
 /* C9. Create a view called vw_all_orders to list all the orders. Run the view 
 for orders shipped from January 1, 2002 and December 31, 2002. */
 
-PRINT('C9: Creating view vw_all_orders...');
+PRINT('C9: Creating view vw_all_orders.');
 GO
 
 CREATE VIEW vw_all_orders
@@ -683,6 +707,9 @@ FROM orders
 INNER JOIN customers ON orders.customer_id = customers.customer_id;
 GO
 
+PRINT('C9: Running view vw_all_orders.');
+GO
+
 SELECT  *
 FROM vw_all_orders
 WHERE CONVERT(datetime, [Shipped Date]) BETWEEN 'Jan 1 2002' AND 'Dec 31 2002'
@@ -692,7 +719,7 @@ GO
 /* C10. Create a view listing the suppliers and the items they have shipped.
 Run the view. */
 
-PRINT('C10: Creating view vw_all_suppliers...');
+PRINT('C10: Creating view vw_all_suppliers.');
 GO
 
 CREATE VIEW vw_all_suppliers
@@ -703,6 +730,9 @@ SELECT  suppliers.supplier_id AS 'Supplier Id',
 		products.name AS 'Product'
 FROM suppliers
 INNER JOIN products ON suppliers.supplier_id = products.supplier_id;
+GO
+
+PRINT('C10: Running view vw_all_suppliers.');
 GO
 
 SELECT *
@@ -720,7 +750,7 @@ GO
 living in a particular city. Run the procedure displaying customers living in
 London. */
 
-PRINT('D1: Creating procedure sp_customer_city...');
+PRINT('D1: Creating procedure sp_customer_city.');
 GO
 
 CREATE PROCEDURE sp_customer_city
@@ -737,6 +767,9 @@ FROM customers
 WHERE city = @city;
 GO
 
+PRINT('D1: Executing procedure sp_customer_city.');
+GO
+
 EXECUTE sp_customer_city 'London';
 GO
 
@@ -744,7 +777,7 @@ GO
 between particular dates. Run the procedure displaying orders from January 1, 2003
 to June 30, 2003. */
 
-PRINT('D2: Creating procedure sp_orders_by_dates...');
+PRINT('D2: Creating procedure sp_orders_by_dates.');
 GO
 
 CREATE PROCEDURE sp_orders_by_dates
@@ -764,6 +797,9 @@ INNER JOIN shippers ON orders.shipper_id = shippers.shipper_id
 WHERE orders.shipped_date BETWEEN @date1 AND @date2;
 GO
 
+PRINT('D2: Executing procedure sp_orders_by_dates.');
+GO
+
 EXECUTE sp_orders_by_dates 'Jan 1 2003', 'Jun 30 2003';
 GO
 
@@ -772,7 +808,7 @@ product ordered during a specified month and year. Run the procedure displaying
 a product name containing Jack and the month of the order date is June and the
 year is 2001. */
 
-PRINT('D3: Creating procedure sp_product_listing...');
+PRINT('D3: Creating procedure sp_product_listing.');
 GO
 
 CREATE PROCEDURE sp_product_listing
@@ -795,6 +831,9 @@ AND DATENAME(month, orders.order_date) = @month
 AND DATEPART(year, orders.order_date) = @year;
 GO
 
+PRINT('D3: Executing procedure sp_product_listing.');
+GO
+
 EXECUTE sp_product_listing '%Jack%', 'June', 2001;
 GO
 
@@ -802,7 +841,7 @@ GO
 display an error message if an order is deleted that has a value in the
 order_details table. */
 
-PRINT('D4: Creating trigger tr_delete_orders on orders...');
+PRINT('D4: Creating trigger tr_delete_orders on orders.');
 GO
 
 CREATE TRIGGER tr_delete_orders
@@ -818,7 +857,7 @@ IF EXISTS (SELECT * FROM order_details WHERE order_id = @id)
 	END;
 GO
 
-PRINT('D4: Verifying trigger tr_delete_orders...');
+PRINT('D4: Verifying trigger tr_delete_orders.');
 GO
 
 DELETE orders
@@ -829,7 +868,7 @@ GO
 table to only allow orders of products that have a quantity in stock greater than or
 equal to the units ordered. */
 
-PRINT('D5: Creating trigger tr_check_qty on order_details...');
+PRINT('D5: Creating trigger tr_check_qty on order_details.');
 GO
 
 CREATE TRIGGER tr_check_qty
@@ -867,7 +906,7 @@ GO
 /* D6. Create a stored procedure called sp_del_inactive_cust to delete customers
 that have no orders. */
 
-PRINT('D6: Creating procedure sp_del_inactive_cust...');
+PRINT('D6: Creating procedure sp_del_inactive_cust.');
 GO
 
 CREATE PROCEDURE sp_del_inactive_cust
@@ -878,7 +917,7 @@ WHERE NOT EXISTS (SELECT *
 				  WHERE orders.customer_id = customers.customer_id);
 GO
 
-PRINT('D6: Verifying procedure sp_del_inactive_cust...');
+PRINT('D6: Executing procedure sp_del_inactive_cust.');
 GO
 
 EXECUTE sp_del_inactive_cust;
@@ -887,7 +926,7 @@ GO
 /* D7. Create a stored procedure called sp_employee_information to display the
 employee information for a particular employee. */
 
-PRINT('D7: Creating procedure sp_employee_information...');
+PRINT('D7: Creating procedure sp_employee_information.');
 GO
 
 CREATE PROCEDURE sp_employee_information
@@ -908,7 +947,7 @@ FROM employee
 WHERE employee_id = @employeeid;
 GO
 
-PRINT('D7: Verifying procedure sp_employee_information...');
+PRINT('D7: Executing procedure sp_employee_information.');
 GO
 
 EXECUTE sp_employee_information 5;
@@ -917,7 +956,7 @@ GO
 /* D8. Create a stored procedure called sp_reorder_qty to show when the reorder
 level substracted from the quantity in stock is less than a specified value. */
 
-PRINT('D8: Creating procedure sp_reorder_qty...');
+PRINT('D8: Creating procedure sp_reorder_qty.');
 GO
 
 CREATE PROCEDURE sp_reorder_qty
@@ -937,7 +976,7 @@ INNER JOIN suppliers ON products.supplier_id = suppliers.supplier_id
 WHERE (products.quantity_in_stock - products.reorder_level) < @unit;
 GO
 
-PRINT('D8: Verifying procedure sp_reorder_qty...');
+PRINT('D8: Executing procedure sp_reorder_qty...');
 GO
 
 EXECUTE sp_reorder_qty 5;
@@ -947,7 +986,7 @@ GO
 where the unit price is between particular values. Run the procedure to 
 display products where the unit price is between $5.00 and $10.00. */
 
-PRINT('D9: Creating procedure sp_unit_prices...');
+PRINT('D9: Creating procedure sp_unit_prices.');
 GO
 
 CREATE PROCEDURE sp_unit_prices
@@ -964,7 +1003,7 @@ FROM products
 WHERE unit_price BETWEEN @price1 AND @price2;
 GO
 
-PRINT('D9: Verifying procedure sp_unit_prices...');
+PRINT('D9: Executing procedure sp_unit_prices...');
 GO
 
 EXECUTE sp_unit_prices $5.00, $10.00;
